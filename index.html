@@ -460,9 +460,12 @@
       .walker { width: 34px; height: 74px; }
     }
 
+    /* 行人動畫在「減少動態效果」下仍保持走動（覆蓋全站縮短動畫的設定） */
     @media (prefers-reduced-motion: reduce) {
-      .walker, .walker * { animation: none !important; }
-      .walker { transform: translateX(var(--x, 50vw)) scale(var(--s, 1)); }
+      .crowd .walker { animation-duration: var(--dur, 18s) !important; }
+      .crowd .walker .bob { animation-duration: var(--step, .9s) !important; }
+      .crowd .walker .leg-a, .crowd .walker .leg-b,
+      .crowd .walker .arm-a, .crowd .walker .arm-b { animation-duration: var(--step2, 1.8s) !important; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1223,7 +1226,6 @@
       renderer.setClearColor(0x000000, 0);
       crowd.appendChild(renderer.domElement);
 
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
       const scene = new T.Scene();
@@ -1552,7 +1554,6 @@
         requestAnimationFrame(loop);
       }
       function setRunning(on) {
-        if (reduceMotion) { renderOnce(); return; }
         if (on && !running) { running = true; clock.getDelta(); requestAnimationFrame(loop); }
         else if (!on) running = false;
       }
