@@ -1222,7 +1222,6 @@
         return false;
       }
       crowd.classList.add("is-3d");
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.setClearColor(0x000000, 0);
       crowd.appendChild(renderer.domElement);
 
@@ -1430,15 +1429,20 @@
       }
 
       // 依畫面寬度計算可視範圍與店面位置
-      let halfW = 10, storeX = 5, doorX = 5;
+      let halfW = 10, storeX = 5, doorX = 5, sizeW = 0, sizeH = 0, sizeDpr = 0;
       function layout() {
-        const w = crowd.clientWidth || 1, h = crowd.clientHeight || 1;
+        // 以畫布實際顯示尺寸為準，避免被 CSS 拉伸變形或模糊
+        const rect = crowd.getBoundingClientRect();
+        const w = Math.max(1, Math.round(rect.width)), h = Math.max(1, Math.round(rect.height));
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        sizeW = w; sizeH = h; sizeDpr = dpr;
+        renderer.setPixelRatio(dpr);
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         const dist = camera.position.z;
         halfW = Math.tan(T.MathUtils.degToRad(camera.fov / 2)) * dist * camera.aspect;
-        storeX = Math.max(halfW * (isMobile ? 0.42 : 0.52), 2.6);
+        storeX = Math.max(halfW * (w < 768 ? 0.42 : 0.52), 2.6);
         store.position.x = storeX;
         doorX = storeX;
       }
@@ -1527,7 +1531,6 @@
 
       // ---------- 動畫迴圈 ----------
       const clock = new T.Clock();
-      let running = false, visible = true;
 
       function step(dt) {
         people.forEach((p) => {
@@ -1547,37 +1550,41 @@
 
       function renderOnce() { renderer.render(scene, camera); }
 
-      function loop() {
-        if (!running) return;
-        step(Math.min(clock.getDelta(), 0.05));
-        renderOnce();
-        requestAnimationFrame(loop);
+      // 尺寸改變時重新配置（含 Tailwind 載入後版面變動、縮放、旋轉手機）
+      function syncSize() {
+        const rect = crowd.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        if (Math.round(rect.width) === sizeW && Math.round(rect.height) === sizeH && dpr === sizeDpr) return;
+        const oldDoor = doorX;
+        layout();
+        const dx = doorX - oldDoor;
+        if (dx) people.forEach((p) => { if (p.mode !== "pass") p.path.forEach((v) => (v.x += dx)); });
       }
-      function setRunning(on) {
-        if (on && !running) { running = true; clock.getDelta(); requestAnimationFrame(loop); }
-        else if (!on) running = false;
+
+      let errorLogged = false;
+      function loop() {
+        requestAnimationFrame(loop);              // 先排下一格，任何錯誤都不會讓動畫停住
+        const dt = Math.min(clock.getDelta(), 0.05);
+        if (document.hidden) return;
+        const r = crowd.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) return;   // 不在畫面上時不算繪，省電
+        try {
+          syncSize();
+          step(dt);
+          renderOnce();
+        } catch (e) {
+          if (!errorLogged) { console.warn("hero crowd frame error", e); errorLogged = true; }
+        }
       }
 
       // 靜態初始姿勢
       people.forEach((p) => { p.legL.rotation.x = 0.3; p.legR.rotation.x = -0.3; });
       renderOnce();
 
-      // 不在畫面上或分頁隱藏時暫停，省電
-      if ("IntersectionObserver" in window) {
-        new IntersectionObserver((entries) => {
-          visible = entries[0].isIntersecting;
-          setRunning(visible && !document.hidden);
-        }).observe(crowd);
-      }
-      document.addEventListener("visibilitychange", () => setRunning(visible && !document.hidden));
-      window.addEventListener("resize", () => {
-        const oldDoor = doorX;
-        layout();
-        const dx = doorX - oldDoor;
-        if (dx) people.forEach((p) => { if (p.mode !== "pass") p.path.forEach((v) => (v.x += dx)); });
-        renderOnce();
-      });
-      setRunning(true);
+      if ("ResizeObserver" in window) new ResizeObserver(() => { syncSize(); renderOnce(); }).observe(crowd);
+      window.addEventListener("resize", () => { syncSize(); renderOnce(); });
+      clock.getDelta();
+      requestAnimationFrame(loop);
       return true;
     }
 
