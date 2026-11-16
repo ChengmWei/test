@@ -880,7 +880,7 @@
             <div class="faq-answer">
               <p class="px-6 pb-6 text-sm text-mocha leading-loose">
                 選擇喜歡的餐點，點擊「加入購物車」，再開啟購物車進行結帳。
-                目前網站為展示版本，訂單不會實際送達門市。
+                <span data-mode-text="faq">目前網站為展示版本，訂單不會實際送達門市。</span>
               </p>
             </div>
           </div>
@@ -1032,7 +1032,7 @@
       <button id="checkoutBtn" type="button" class="btn-primary w-full" disabled>
         前往結帳 <i data-lucide="arrow-right" class="w-4 h-4"></i>
       </button>
-      <p class="text-[11px] text-mocha text-center mt-3">展示模式 · 不會產生真實訂單或付款</p>
+      <p id="cartModeNote" class="text-[11px] text-mocha text-center mt-3">展示模式 · 不會產生真實訂單或付款</p>
     </div>
   </aside>
 
@@ -1105,8 +1105,15 @@
           </div>
         </div>
 
-        <button type="submit" class="btn-primary w-full">確認建立模擬訂單</button>
-        <p class="text-xs text-center text-mocha">
+        <!-- 機器人誘餌欄位（真人看不到） -->
+        <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+          <label>網站 <input type="text" name="website" id="orderWebsite" tabindex="-1" autocomplete="off"></label>
+        </div>
+
+        <p id="checkoutError" class="hidden text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-3" role="alert"></p>
+
+        <button id="submitOrderBtn" type="submit" class="btn-primary w-full">確認建立模擬訂單</button>
+        <p id="checkoutDisclaimer" class="text-xs text-center text-mocha">
           此為前端流程展示，不會傳送個資、進行付款或建立實際訂單。
         </p>
       </form>
@@ -1115,17 +1122,18 @@
 
   <!-- ==================== SUCCESS MODAL ==================== -->
   <div id="successModal" class="modal-layer" role="dialog" aria-modal="true"
-    aria-label="模擬訂單建立成功" aria-hidden="true">
+    aria-label="訂單建立成功" aria-hidden="true">
     <div class="modal-box text-center py-12">
       <div class="w-20 h-20 bg-green-100 text-green-700 rounded-full mx-auto flex items-center justify-center mb-6">
         <i data-lucide="check" class="w-10 h-10"></i>
       </div>
-      <h2 class="serif text-3xl font-bold">模擬訂單已建立！</h2>
-      <p class="text-mocha mt-4 leading-loose">
+      <h2 id="successTitle" class="serif text-3xl font-bold">模擬訂單已建立！</h2>
+      <p id="successText" class="text-mocha mt-4 leading-loose">
         感謝體驗金邊鍋貼的線上點餐流程。<br>
         此訂單僅於本次網頁操作中成立，並未送出。
       </p>
-      <p class="text-sm mt-5">展示訂單編號：<strong id="orderNumber"></strong></p>
+      <p class="text-sm mt-5"><span id="orderNumberLabel">展示訂單編號</span>：<strong id="orderNumber"></strong></p>
+      <div id="successSummary" class="hidden mt-5 mx-auto max-w-xs text-left text-sm text-mocha bg-paper rounded-xl p-4 space-y-1"></div>
       <button id="successCloseBtn" class="btn-primary mt-8" type="button">
         繼續逛逛
       </button>
@@ -1145,7 +1153,7 @@
       <div class="text-sm text-mocha leading-loose space-y-4">
         <p>本網站為前端示範原型，不提供正式訂購、會員或電子報服務。</p>
         <p>購物車商品資料儲存在您瀏覽器的 localStorage 中，以保留購物車狀態。可透過清除瀏覽器網站資料移除。</p>
-        <p>結帳表單輸入的聯絡資訊只用於本頁模擬流程，不會傳送至金邊鍋貼伺服器。</p>
+        <p data-mode-text="privacy">結帳表單輸入的聯絡資訊只用於本頁模擬流程，不會傳送至金邊鍋貼伺服器。</p>
         <p>本網站使用 Tailwind CDN、Lucide、Google Fonts、Unsplash 及 Google Maps 等外部資源，瀏覽器可能向服務提供方發出載入請求。</p>
         <p>正式上線前，應依實際資料蒐集、金流、物流及第三方服務內容制定完整隱私權政策。</p>
       </div>
@@ -1719,6 +1727,16 @@
     ];
 
     const CART_KEY = "golden-edge-demo-cart-v1";
+
+    // ==================================================
+    // 訂單後端（Google Apps Script 網頁應用程式網址）
+    // 部署 gas/Code.gs 後，把「網頁應用程式」網址貼在這裡，例如：
+    //   "https://script.google.com/macros/s/XXXXXXXX/exec"
+    // 留空 = 展示模式（不送出訂單）
+    // ==================================================
+    const ORDER_API_URL = "";
+    const ORDER_TIMEOUT_MS = 20000;
+    const isLiveOrdering = /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(ORDER_API_URL);
     const $ = selector => document.querySelector(selector);
     const $$ = selector => document.querySelectorAll(selector);
     const money = n => "NT$ " + Number(n).toLocaleString("zh-TW");
@@ -2028,6 +2046,8 @@
 
       renderCheckoutSummary();
       $("#checkoutForm").reset();
+      setCheckoutError("");
+      pendingClientOrderId = null;
       toggleDeliveryAddress();
       closeCart(false);
       openModal("checkoutModal");
@@ -2045,8 +2065,102 @@
       if (!isDelivery) input.value = "";
     }
 
-    function submitOrder(event) {
+    function setCheckoutError(message) {
+      const box = $("#checkoutError");
+      box.textContent = message || "";
+      box.classList.toggle("hidden", !message);
+    }
+
+    function setSubmitting(on) {
+      const btn = $("#submitOrderBtn");
+      btn.disabled = on;
+      btn.setAttribute("aria-busy", on ? "true" : "false");
+      btn.textContent = on ? "訂單送出中…" : (isLiveOrdering ? "確認送出訂單" : "確認建立模擬訂單");
+    }
+
+    // 同一份購物車重送時沿用同一個 ID，後端據此避免重複建單
+    let pendingClientOrderId = null;
+    function newClientOrderId() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    }
+
+    function collectOrder() {
+      const form = $("#checkoutForm");
+      return {
+        orderType: form.querySelector('input[name="orderType"]:checked').value,
+        name: $("#customerName").value.trim(),
+        phone: $("#customerPhone").value.trim(),
+        address: $("#customerAddress").value.trim(),
+        note: $("#orderNote").value.trim(),
+        website: $("#orderWebsite").value,
+        items: getCartEntries().map(({product, qty}) => ({ id: product.id, qty })),
+        clientOrderId: pendingClientOrderId || (pendingClientOrderId = newClientOrderId()),
+        source: window.matchMedia("(display-mode: standalone)").matches ? "pwa" : "web"
+      };
+    }
+
+    async function sendOrder(order) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), ORDER_TIMEOUT_MS);
+      try {
+        // 以 text/plain 傳送 JSON，避免瀏覽器對 Apps Script 發出 CORS 預檢請求
+        const res = await fetch(ORDER_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(order),
+          redirect: "follow",
+          signal: controller.signal
+        });
+        const data = await res.json().catch(() => null);
+        if (!data) throw new Error("伺服器回應異常，請稍後再試。");
+        return data;
+      } catch (err) {
+        if (err.name === "AbortError") throw new Error("連線逾時，請確認網路後再試一次（不會重複下單）。");
+        if (err instanceof TypeError) throw new Error("無法連線到訂單系統，請確認網路後再試一次。");
+        throw err;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    function showSuccess({ orderId, lines, total, live }) {
+      $("#orderNumber").textContent = orderId;
+      $("#orderNumberLabel").textContent = live ? "訂單編號" : "展示訂單編號";
+      $("#successTitle").textContent = live ? "訂單已送出！" : "模擬訂單已建立！";
+      $("#successText").innerHTML = live
+        ? "感謝您的訂購，門市已收到您的訂單。<br>請保留訂單編號，取餐或查詢時使用。"
+        : "感謝體驗金邊鍋貼的線上點餐流程。<br>此訂單僅於本次網頁操作中成立，並未送出。";
+      const box = $("#successSummary");
+      if (live && lines && lines.length) {
+        box.innerHTML = lines.map(l =>
+          `<div class="flex justify-between gap-3"><span>${escapeHTML(l.name)} × ${Number(l.qty)}</span><span>${money(l.subtotal)}</span></div>`
+        ).join("") + `<div class="flex justify-between gap-3 border-t border-stone-300 pt-2 mt-2 font-bold text-coffee"><span>商品合計</span><span>${money(total)}</span></div>`;
+        box.classList.remove("hidden");
+      } else {
+        box.innerHTML = "";
+        box.classList.add("hidden");
+      }
+    }
+
+    function escapeHTML(text) {
+      return String(text).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function finishOrder() {
+      pendingClientOrderId = null;
+      cart = {};
+      saveCart();
+      updateCartUI();
+      $("#checkoutForm").reset();
+      closeModal("checkoutModal");
+      openModal("successModal");
+    }
+
+    async function submitOrder(event) {
       event.preventDefault();
+      if ($("#submitOrderBtn").disabled) return;
+      setCheckoutError("");
       if (!getCartEntries().length) {
         showToast("購物車目前沒有商品");
         closeModal("checkoutModal");
@@ -2056,23 +2170,53 @@
       const form = $("#checkoutForm");
       if (!form.reportValidity()) return;
 
-      // 僅產生前端展示訂單編號，不會送出資料。
-      const now = new Date();
-      const datePart = [
-        now.getFullYear(),
-        String(now.getMonth() + 1).padStart(2, "0"),
-        String(now.getDate()).padStart(2, "0")
-      ].join("");
-      const randomPart = Math.floor(Math.random() * 900000 + 100000);
+      if (!isLiveOrdering) {
+        // 展示模式：僅產生前端訂單編號，不會送出資料。
+        const now = new Date();
+        const datePart = [
+          now.getFullYear(),
+          String(now.getMonth() + 1).padStart(2, "0"),
+          String(now.getDate()).padStart(2, "0")
+        ].join("");
+        const randomPart = Math.floor(Math.random() * 900000 + 100000);
+        showSuccess({ orderId: `DEMO-${datePart}-${randomPart}`, live: false });
+        finishOrder();
+        return;
+      }
 
-      $("#orderNumber").textContent = `DEMO-${datePart}-${randomPart}`;
+      if (!navigator.onLine) {
+        setCheckoutError("目前沒有網路連線，請連上網路後再送出訂單。");
+        return;
+      }
 
-      cart = {};
-      saveCart();
-      updateCartUI();
-      form.reset();
-      closeModal("checkoutModal");
-      openModal("successModal");
+      setSubmitting(true);
+      try {
+        const result = await sendOrder(collectOrder());
+        if (!result.ok) {
+          // 後端驗證失敗：顯示原因，購物車保留讓顧客修正
+          setCheckoutError(result.message || "訂單送出失敗，請稍後再試。");
+          if (result.code !== "RATE_LIMIT" && result.code !== "BUSY") pendingClientOrderId = null;
+          return;
+        }
+        showSuccess({ ...result, live: true });
+        finishOrder();
+      } catch (err) {
+        setCheckoutError(err.message || "訂單送出失敗，請稍後再試。");
+      } finally {
+        setSubmitting(false);
+      }
+    }
+
+    // 依是否已串接後端，切換頁面上的說明文字
+    function applyOrderingMode() {
+      setSubmitting(false);
+      if (!isLiveOrdering) return;
+      $("#cartModeNote").textContent = "送出後門市即收到訂單 · 付款於取餐 / 收貨時進行";
+      $("#checkoutDisclaimer").textContent = "送出即表示同意本站隱私權說明；目前不提供線上付款，請於取餐或收貨時付款。";
+      const faq = document.querySelector('[data-mode-text="faq"]');
+      if (faq) faq.textContent = "送出後門市會即時收到訂單，請保留訂單編號以便取餐。";
+      const privacy = document.querySelector('[data-mode-text="privacy"]');
+      if (privacy) privacy.textContent = "結帳時填寫的姓名、手機、地址與備註，會傳送至金邊鍋貼的 Google 試算表，僅用於處理本次訂單與聯繫取餐 / 配送。";
     }
 
     // --------------------------------------------------
@@ -2172,6 +2316,7 @@
       renderMenu();
       updateCartUI();
       selectStore(0);
+      applyOrderingMode();
       setupFAQ();
 
       $("#year").textContent = new Date().getFullYear();

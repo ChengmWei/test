@@ -3,7 +3,7 @@
  * - 外部 CDN（Tailwind、字型、圖示、Three.js、圖片）：先用快取、背景更新
  * 更新網站內容時，把 VERSION 改掉即可讓舊快取失效。
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL_CACHE = `golden-edge-shell-${VERSION}`;
 const RUNTIME_CACHE = `golden-edge-runtime-${VERSION}`;
 
