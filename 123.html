@@ -1,0 +1,1706 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#34251e">
+  <meta name="description" content="金邊鍋貼 GOLDEN EDGE，以現煎金黃脆邊與天然實在的好味道，款待每一餐。">
+  <title>金邊鍋貼 GOLDEN EDGE｜把每天的一餐，煎出金邊</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: "#faf7f1",
+            paper: "#f1e9dc",
+            coffee: "#34251e",
+            mocha: "#725747",
+            orange: "#c97936",
+            gold: "#d6a35b"
+          },
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'sans-serif'],
+            serif: ['"Noto Serif TC"', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- 字體與圖示 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+
+  <style>
+    :root {
+      --coffee: #34251e;
+      --orange: #c97936;
+      --cream: #faf7f1;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      font-family: "Noto Sans TC", sans-serif;
+      color: var(--coffee);
+      background: var(--cream);
+      overflow-x: hidden;
+    }
+
+    body.locked {
+      overflow: hidden;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 3px;
+    }
+
+    .serif {
+      font-family: "Noto Serif TC", serif;
+    }
+
+    .eyebrow {
+      color: var(--orange);
+      font-size: 11px;
+      letter-spacing: .25em;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      background: var(--orange);
+      color: white;
+      border-radius: 999px;
+      padding: 13px 24px;
+      font-weight: 700;
+      transition: .25s ease;
+    }
+
+    .btn-primary:hover {
+      background: #a95d26;
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      padding: 12px 24px;
+      font-weight: 700;
+      transition: .25s ease;
+    }
+
+    .btn-outline:hover {
+      background: var(--coffee);
+      border-color: var(--coffee);
+      color: white;
+    }
+
+    .hero {
+      min-height: 650px;
+      background-image:
+        linear-gradient(90deg,
+          rgba(29, 20, 15, .86) 0%,
+          rgba(29, 20, 15, .56) 47%,
+          rgba(29, 20, 15, .15) 100%),
+        url("https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=2000&q=85");
+      background-position: center;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-wrap {
+      max-width: 1200px;
+      margin-inline: auto;
+      padding-inline: 24px;
+    }
+
+    .menu-card {
+      background: #fff;
+      border: 1px solid #eee7dc;
+      border-radius: 18px;
+      overflow: hidden;
+      transition: .25s ease;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 40px rgba(52,37,30,.09);
+    }
+
+    .menu-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform .5s ease;
+    }
+
+    .menu-card:hover .menu-image {
+      transform: scale(1.05);
+    }
+
+    .tab-btn {
+      border: 1px solid #e3d9cb;
+      background: white;
+      border-radius: 999px;
+      padding: 11px 20px;
+      font-size: 14px;
+      white-space: nowrap;
+      transition: .2s;
+    }
+
+    .tab-btn.active {
+      background: var(--coffee);
+      color: #fff;
+      border-color: var(--coffee);
+    }
+
+    .tab-btn:hover:not(.active) {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .field {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #ded5c9;
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px 13px;
+      outline: none;
+    }
+
+    .field:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(201,121,54,.12);
+    }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(20,14,10,.58);
+      z-index: 70;
+      opacity: 0;
+      visibility: hidden;
+      transition: .3s;
+    }
+
+    .backdrop.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .drawer {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: min(100%, 450px);
+      background: var(--cream);
+      z-index: 80;
+      transform: translateX(105%);
+      transition: transform .35s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 45px rgba(0,0,0,.12);
+    }
+
+    .drawer.show {
+      transform: translateX(0);
+    }
+
+    .modal-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      padding: 18px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(20,14,10,.65);
+    }
+
+    .modal-layer.show {
+      display: flex;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 540px;
+      max-height: 92vh;
+      overflow-y: auto;
+      background: var(--cream);
+      border-radius: 22px;
+      padding: 26px;
+      animation: pop .25s ease;
+    }
+
+    @keyframes pop {
+      from {opacity:0;transform:scale(.96) translateY(12px)}
+      to {opacity:1;transform:scale(1) translateY(0)}
+    }
+
+    #toast {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      z-index: 110;
+      background: var(--coffee);
+      color: #fff;
+      border-radius: 12px;
+      padding: 14px 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,.2);
+      transform: translateY(-20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .3s;
+      max-width: calc(100vw - 40px);
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .3s ease;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+    }
+
+    .faq-item.open .faq-chevron {
+      transform: rotate(180deg);
+    }
+
+    .faq-chevron {
+      transition: transform .25s;
+    }
+
+    .location-btn.active {
+      border-color: var(--orange);
+      background: #fff7ee;
+    }
+
+    .location-btn {
+      border: 1px solid #e6dbce;
+      transition: .2s;
+      text-align: left;
+    }
+
+    .location-btn:hover {
+      border-color: var(--orange);
+    }
+
+    .mobile-nav {
+      display: none;
+    }
+
+    .mobile-nav.show {
+      display: flex;
+    }
+
+    @media (max-width: 767px) {
+      .hero {
+        min-height: 620px;
+        background-image:
+          linear-gradient(90deg,
+            rgba(29,20,15,.85),
+            rgba(29,20,15,.45)),
+          url("https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1100&q=80");
+        background-position: 58% center;
+      }
+
+      .section-wrap {
+        padding-inline: 20px;
+      }
+
+      .menu-image {
+        height: 175px;
+      }
+
+      .modal-box {
+        padding: 22px 18px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ==================== HEADER ==================== -->
+  <header id="header" class="sticky top-0 z-50 bg-cream/95 backdrop-blur-md border-b border-stone-200">
+    <div class="section-wrap h-[76px] flex items-center justify-between gap-4">
+      <a href="#home" class="flex items-center gap-3 shrink-0" aria-label="金邊鍋貼首頁">
+        <div class="w-11 h-11 bg-coffee text-gold rounded-full flex items-center justify-center">
+          <i data-lucide="sunrise" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="serif text-[19px] font-bold tracking-widest leading-tight">金邊鍋貼</div>
+          <div class="text-[9px] tracking-[.28em] text-mocha">GOLDEN EDGE</div>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-6 text-[13px] font-medium" aria-label="主要導覽">
+        <a href="#story" class="hover:text-orange">品牌故事</a>
+        <a href="#menu" class="hover:text-orange">熱門餐點</a>
+        <a href="#menu" class="hover:text-orange">線上點餐</a>
+        <a href="#gifts" class="hover:text-orange">冷凍禮盒</a>
+        <a href="#locations" class="hover:text-orange">門市據點</a>
+        <a href="#contact" class="hover:text-orange">聯絡我們</a>
+      </nav>
+
+      <div class="flex items-center gap-2 sm:gap-4">
+        <button id="cartOpenBtn" type="button"
+          class="relative p-2 hover:text-orange"
+          aria-label="開啟購物車">
+          <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+          <span id="cartBadge"
+            class="absolute -top-1 -right-1 bg-orange text-white text-[10px] rounded-full min-w-[20px] h-5 flex items-center justify-center px-1">
+            0
+          </span>
+        </button>
+
+        <a href="#menu" class="btn-primary !px-4 sm:!px-6 !py-2.5 text-xs sm:text-sm">
+          立即點餐
+        </a>
+
+        <button id="menuToggle" type="button" class="lg:hidden p-2"
+          aria-label="切換手機選單" aria-expanded="false">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav id="mobileNav"
+      class="mobile-nav lg:hidden flex-col bg-cream px-6 py-4 gap-4 border-t border-stone-200 text-sm"
+      aria-label="手機導覽">
+      <a href="#story">品牌故事</a>
+      <a href="#menu">熱門餐點 / 線上點餐</a>
+      <a href="#gifts">冷凍禮盒</a>
+      <a href="#locations">門市據點</a>
+      <a href="#contact">聯絡我們</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ==================== HERO ==================== -->
+    <section id="home" class="hero text-white">
+      <div class="section-wrap w-full py-20">
+        <div class="max-w-2xl">
+          <div class="flex items-center gap-3 mb-7">
+            <span class="h-px w-10 bg-gold"></span>
+            <span class="text-gold text-xs tracking-[.3em]">
+              THE ART OF GOLDEN CRISP
+            </span>
+          </div>
+
+          <h1 class="serif text-[40px] sm:text-5xl md:text-[64px] font-bold leading-[1.45] tracking-wider">
+            金黃酥脆，<br>
+            <span class="text-[#edb76f]">每一口都是講究。</span>
+          </h1>
+
+          <p class="mt-7 text-base sm:text-lg text-stone-200 leading-loose max-w-lg">
+            一面金黃酥脆，一口鮮甜多汁。<br>
+            從食材到火候，把最簡單的日常，<br class="hidden sm:block">
+            做成值得細細品味的美好。
+          </p>
+
+          <div class="flex flex-wrap gap-4 mt-10">
+            <a href="#menu" class="btn-primary">
+              線上點餐 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+            <a href="#locations" class="btn-outline text-white">
+              探索門市 <i data-lucide="map-pin" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <div class="mt-16 flex items-center gap-3 text-xs text-stone-300 tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-gold"></span>
+            FRESHLY MADE · CAREFULLY CRAFTED
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== BRAND STORY ==================== -->
+    <section id="story" class="py-20 md:py-28">
+      <div class="section-wrap">
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div class="relative">
+            <img
+              src="https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=1100&q=85"
+              alt="手工製作的餃子"
+              loading="lazy"
+              class="rounded-[18px] w-full h-[360px] md:h-[520px] object-cover"
+            >
+            <div class="absolute -bottom-5 -right-2 sm:-right-5 bg-coffee text-white rounded-xl px-7 py-6 shadow-xl">
+              <div class="serif text-gold text-2xl font-bold">一口用心</div>
+              <p class="mt-2 text-xs tracking-widest">CRAFTED WITH CARE</p>
+            </div>
+          </div>
+
+          <div class="pt-6 md:pt-0">
+            <p class="eyebrow mb-5">Our Philosophy</p>
+            <h2 class="serif text-3xl md:text-4xl font-bold leading-relaxed">
+              把每天的一餐，<br>
+              煎出金邊、包進實在。
+            </h2>
+            <div class="w-14 h-1 bg-orange mt-7 mb-8"></div>
+            <p class="text-mocha leading-[2.1] text-sm md:text-base">
+              我們相信，美味不需要複雜的修飾。從新鮮食材的挑選、
+              內餡的調配，到鍋貼在鐵鍋上滋滋作響的每個瞬間，
+              都是對日常的一份尊重。
+            </p>
+            <p class="mt-5 text-mocha leading-[2.1] text-sm md:text-base">
+              金邊鍋貼追求的，不只是飽足，更是每一位客人走進店裡，
+              都能感受到的安心、溫暖與剛剛好的生活質感。
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-9">
+              <div class="flex sm:block items-center gap-3">
+                <i data-lucide="leaf" class="text-orange w-7 h-7 sm:mb-3"></i>
+                <span class="text-sm font-semibold">安心食材</span>
+              </div>
+              <div class="flex sm:block items-center gap-3">
+                <i data-lucide="chef-hat" class="text-orange w-7 h-7 sm:mb-3"></i>
+                <span class="text-sm font-semibold">用心製作</span>
+              </div>
+              <div class="flex sm:block items-center gap-3">
+                <i data-lucide="flame" class="text-orange w-7 h-7 sm:mb-3"></i>
+                <span class="text-sm font-semibold">現點現煎</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 品牌展示數據，正式上線前請替換為真實數據 -->
+    <section class="bg-coffee text-white py-12">
+      <div class="section-wrap">
+        <p class="text-center text-[11px] text-stone-400 mb-7">
+          以下為網站版型示範數據，非實際營運統計
+        </p>
+        <div class="grid grid-cols-3 text-center divide-x divide-white/20">
+          <div class="px-2">
+            <div class="serif text-2xl md:text-4xl text-gold font-bold">10,000+</div>
+            <p class="text-[11px] md:text-sm text-stone-300 mt-3">每日顆數示例</p>
+          </div>
+          <div class="px-2">
+            <div class="serif text-2xl md:text-4xl text-gold font-bold">100%</div>
+            <p class="text-[11px] md:text-sm text-stone-300 mt-3">現點現煎理念</p>
+          </div>
+          <div class="px-2">
+            <div class="serif text-2xl md:text-4xl text-gold font-bold">30<span class="text-lg">年</span></div>
+            <p class="text-[11px] md:text-sm text-stone-300 mt-3">工藝傳承示例</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== MENU ==================== -->
+    <section id="menu" class="py-20 md:py-28 bg-[#f5efe6]">
+      <div class="section-wrap">
+        <div class="text-center mb-12">
+          <p class="eyebrow mb-4">Signature Menu</p>
+          <h2 class="serif text-3xl md:text-4xl font-bold">好味道，從這裡開始</h2>
+          <p class="mt-5 text-mocha text-sm leading-relaxed">
+            從招牌鍋貼到暖心湯品，每一道都值得期待。
+          </p>
+        </div>
+
+        <div id="menuTabs"
+          class="flex gap-3 overflow-x-auto pb-4 mb-7 md:justify-center"
+          role="tablist"
+          aria-label="餐點分類">
+          <button class="tab-btn active" type="button" data-category="all" role="tab" aria-selected="true">全部餐點</button>
+          <button class="tab-btn" type="button" data-category="potsticker" role="tab" aria-selected="false">招牌鍋貼</button>
+          <button class="tab-btn" type="button" data-category="dumpling" role="tab" aria-selected="false">精選水餃</button>
+          <button class="tab-btn" type="button" data-category="soup" role="tab" aria-selected="false">湯品 / 飲料</button>
+          <button class="tab-btn" type="button" data-category="side" role="tab" aria-selected="false">經典小菜</button>
+        </div>
+
+        <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          aria-live="polite"></div>
+
+        <p class="text-center text-xs text-mocha mt-10">
+          ※ 所有品項、價格與圖片為網站展示用途，實際供應以門市公告為準。
+        </p>
+      </div>
+    </section>
+
+    <!-- ==================== GIFT BOXES ==================== -->
+    <section id="gifts" class="py-20 md:py-28">
+      <div class="section-wrap">
+        <div class="text-center mb-12">
+          <p class="eyebrow mb-4">A Gift of Good Taste</p>
+          <h2 class="serif text-3xl md:text-4xl font-bold">把金黃好味道，帶回家</h2>
+          <p class="text-mocha text-sm mt-5 leading-relaxed">
+            冷凍鍋貼禮盒，讓美好滋味隨時上桌。
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <article class="rounded-2xl overflow-hidden bg-paper">
+            <div class="relative">
+              <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1000&q=85"
+                alt="冷凍鍋貼家庭組示意圖" loading="lazy" class="w-full h-64 md:h-72 object-cover">
+              <span class="absolute top-5 left-5 bg-white text-coffee text-xs font-bold px-4 py-2 rounded-full">
+                家庭人氣組
+              </span>
+            </div>
+            <div class="p-7 md:p-9">
+              <h3 class="serif text-2xl font-bold">金邊經典家庭禮盒</h3>
+              <p class="text-sm text-mocha mt-3 leading-relaxed">
+                經典原味鍋貼 50 入，適合家庭聚餐與日常備餐。
+              </p>
+              <div class="flex justify-between items-center gap-3 mt-7">
+                <span class="text-orange text-2xl font-bold">NT$ 399</span>
+                <button class="btn-primary !px-5 !py-3 text-sm" type="button" onclick="addToCart('gift1')">
+                  <i data-lucide="shopping-cart" class="w-4 h-4"></i> 加入購物車
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="rounded-2xl overflow-hidden bg-paper">
+            <div class="relative">
+              <img src="https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=1000&q=85"
+                alt="節慶鍋貼禮盒示意圖" loading="lazy" class="w-full h-64 md:h-72 object-cover">
+              <span class="absolute top-5 left-5 bg-orange text-white text-xs font-bold px-4 py-2 rounded-full">
+                節慶推薦
+              </span>
+            </div>
+            <div class="p-7 md:p-9">
+              <h3 class="serif text-2xl font-bold">金邊招財雙拼禮盒</h3>
+              <p class="text-sm text-mocha mt-3 leading-relaxed">
+                原味與韭菜雙口味共 60 入，分享給重要的人。
+              </p>
+              <div class="flex justify-between items-center gap-3 mt-7">
+                <span class="text-orange text-2xl font-bold">NT$ 499</span>
+                <button class="btn-primary !px-5 !py-3 text-sm" type="button" onclick="addToCart('gift2')">
+                  <i data-lucide="shopping-cart" class="w-4 h-4"></i> 加入購物車
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-7 mt-12 border-t border-stone-200 pt-10">
+          <div class="flex gap-4">
+            <i data-lucide="snowflake" class="w-7 h-7 text-orange shrink-0"></i>
+            <div>
+              <h4 class="font-bold mb-2">冷凍鎖鮮</h4>
+              <p class="text-mocha text-sm leading-relaxed">透過適當冷凍保存，維持食材風味。</p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <i data-lucide="clock-3" class="w-7 h-7 text-orange shrink-0"></i>
+            <div>
+              <h4 class="font-bold mb-2">輕鬆料理</h4>
+              <p class="text-mocha text-sm leading-relaxed">依包裝指示煎煮，省時享用好味道。</p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <i data-lucide="gift" class="w-7 h-7 text-orange shrink-0"></i>
+            <div>
+              <h4 class="font-bold mb-2">送禮心意</h4>
+              <p class="text-mocha text-sm leading-relaxed">家庭分享與節慶伴手禮的暖心選擇。</p>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-mocha mt-6">※ 冷凍技術、烹調時間及保存期限須依實際商品檢驗與標示確認，本頁不作特定製程保證。</p>
+      </div>
+    </section>
+
+    <!-- ==================== BRAND QUOTE ==================== -->
+    <section class="bg-coffee text-white py-20 text-center">
+      <div class="section-wrap">
+        <i data-lucide="quote" class="w-9 h-9 mx-auto text-gold mb-7"></i>
+        <h2 class="serif text-2xl md:text-4xl leading-[1.8] font-semibold">
+          「一口金邊，是對日常的溫柔款待。」
+        </h2>
+        <p class="text-gold text-xs tracking-[.3em] mt-7">GOLDEN EDGE · EVERYDAY DELIGHT</p>
+      </div>
+    </section>
+
+    <!-- ==================== LOCATIONS ==================== -->
+    <section id="locations" class="py-20 md:py-28">
+      <div class="section-wrap">
+        <div class="text-center mb-12">
+          <p class="eyebrow mb-4">Find Us</p>
+          <h2 class="serif text-3xl md:text-4xl font-bold">尋找你的金邊時刻</h2>
+          <p class="text-mocha mt-5 text-sm">門市資訊展示版型，實際據點尚待設定。</p>
+        </div>
+
+        <div class="grid lg:grid-cols-[.85fr_1.15fr] gap-8">
+          <div>
+            <div id="locationButtons" class="grid sm:grid-cols-2 lg:grid-cols-1 gap-3 mb-6">
+              <button class="location-btn active rounded-xl p-5" type="button" data-index="0">
+                <span class="text-xs text-orange font-bold">DEMO STORE 01</span>
+                <h3 class="serif text-lg font-bold mt-2">台北旗艦店（示範）</h3>
+                <p class="text-mocha text-xs mt-2">台北市大安區</p>
+              </button>
+              <button class="location-btn rounded-xl p-5" type="button" data-index="1">
+                <span class="text-xs text-orange font-bold">DEMO STORE 02</span>
+                <h3 class="serif text-lg font-bold mt-2">台北信義店（示範）</h3>
+                <p class="text-mocha text-xs mt-2">台北市信義區</p>
+              </button>
+            </div>
+
+            <div class="bg-paper rounded-2xl p-6 md:p-8">
+              <h3 id="storeName" class="serif text-xl font-bold mb-6"></h3>
+              <div class="space-y-5 text-sm">
+                <div class="flex gap-3">
+                  <i data-lucide="map-pin" class="w-5 h-5 text-orange shrink-0"></i>
+                  <div><strong>門市地址</strong><p id="storeAddress" class="mt-1 text-mocha"></p></div>
+                </div>
+                <div class="flex gap-3">
+                  <i data-lucide="phone" class="w-5 h-5 text-orange shrink-0"></i>
+                  <div><strong>聯絡電話</strong><p id="storePhone" class="mt-1 text-mocha"></p></div>
+                </div>
+                <div class="flex gap-3">
+                  <i data-lucide="clock" class="w-5 h-5 text-orange shrink-0"></i>
+                  <div><strong>營業時間</strong><p id="storeHours" class="mt-1 text-mocha"></p></div>
+                </div>
+              </div>
+              <div class="mt-7 pt-5 border-t border-stone-300">
+                <p class="text-xs text-mocha mb-3">外送合作平台（示範，尚未串接）</p>
+                <div class="flex gap-3 flex-wrap">
+                  <span class="bg-white rounded-lg px-4 py-2 text-sm font-bold text-green-700">Uber Eats</span>
+                  <span class="bg-white rounded-lg px-4 py-2 text-sm font-bold text-pink-600">foodpanda</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl overflow-hidden border border-stone-200 bg-paper min-h-[400px]">
+            <iframe id="storeMap"
+              title="門市區域示範地圖"
+              class="w-full h-[400px] lg:h-full min-h-[400px]"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://maps.google.com/maps?q=Taipei%20Da'an%20District&t=&z=13&ie=UTF8&iwloc=&output=embed">
+            </iframe>
+          </div>
+        </div>
+        <p class="text-center text-xs text-mocha mt-6">
+          ※ 地圖僅顯示示範行政區域，並非實際金邊鍋貼門市位置。
+        </p>
+      </div>
+    </section>
+
+    <!-- ==================== FAQ ==================== -->
+    <section id="faq" class="py-20 bg-[#f5efe6]">
+      <div class="section-wrap max-w-4xl">
+        <div class="text-center mb-12">
+          <p class="eyebrow mb-4">Frequently Asked Questions</p>
+          <h2 class="serif text-3xl md:text-4xl font-bold">常見問題</h2>
+        </div>
+
+        <div class="space-y-3" id="faqList">
+          <div class="faq-item bg-white rounded-xl">
+            <button class="faq-question w-full flex items-center justify-between text-left p-6 gap-4"
+              type="button" aria-expanded="false">
+              <span class="font-semibold">如何在線上點餐？</span>
+              <i data-lucide="chevron-down" class="faq-chevron w-5 h-5 text-orange shrink-0"></i>
+            </button>
+            <div class="faq-answer">
+              <p class="px-6 pb-6 text-sm text-mocha leading-loose">
+                選擇喜歡的餐點，點擊「加入購物車」，再開啟購物車進行結帳。
+                目前網站為展示版本，訂單不會實際送達門市。
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item bg-white rounded-xl">
+            <button class="faq-question w-full flex items-center justify-between text-left p-6 gap-4"
+              type="button" aria-expanded="false">
+              <span class="font-semibold">冷凍鍋貼應該如何保存？</span>
+              <i data-lucide="chevron-down" class="faq-chevron w-5 h-5 text-orange shrink-0"></i>
+            </button>
+            <div class="faq-answer">
+              <p class="px-6 pb-6 text-sm text-mocha leading-loose">
+                冷凍產品應依實際包裝標示的溫度及期限保存，避免反覆解凍。
+                烹調時請依包裝說明充分加熱，確保食品安全。
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item bg-white rounded-xl">
+            <button class="faq-question w-full flex items-center justify-between text-left p-6 gap-4"
+              type="button" aria-expanded="false">
+              <span class="font-semibold">是否提供外送服務？</span>
+              <i data-lucide="chevron-down" class="faq-chevron w-5 h-5 text-orange shrink-0"></i>
+            </button>
+            <div class="faq-answer">
+              <p class="px-6 pb-6 text-sm text-mocha leading-loose">
+                本展示網站尚未連接外送平台。正式營運時可依門市外送範圍，
+                串接 Uber Eats、foodpanda 或自有外送系統。
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item bg-white rounded-xl">
+            <button class="faq-question w-full flex items-center justify-between text-left p-6 gap-4"
+              type="button" aria-expanded="false">
+              <span class="font-semibold">可以選擇內用、外帶或宅配嗎？</span>
+              <i data-lucide="chevron-down" class="faq-chevron w-5 h-5 text-orange shrink-0"></i>
+            </button>
+            <div class="faq-answer">
+              <p class="px-6 pb-6 text-sm text-mocha leading-loose">
+                可以。在模擬結帳表單中可選擇內用、外帶或宅配。
+                正式上線後需依餐點類型與門市服務範圍設定實際配送規則。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer id="contact" class="bg-coffee text-white pt-16 pb-8">
+      <div class="section-wrap">
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 pb-14">
+          <div class="lg:col-span-1">
+            <h2 class="serif text-2xl font-bold text-gold tracking-widest">金邊鍋貼</h2>
+            <p class="text-xs tracking-[.24em] text-stone-400 mt-1">GOLDEN EDGE</p>
+            <p class="text-sm text-stone-300 leading-loose mt-6">
+              把每天的一餐，<br>煎出金邊、包進實在。
+            </p>
+            <div class="flex gap-4 mt-7">
+              <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram 平台（示範）" class="hover:text-gold">
+                <i data-lucide="instagram" class="w-5 h-5"></i>
+              </a>
+              <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook 平台（示範）" class="hover:text-gold">
+                <i data-lucide="facebook" class="w-5 h-5"></i>
+              </a>
+              <a href="https://line.me/" target="_blank" rel="noopener noreferrer" aria-label="LINE 平台（示範）" class="hover:text-gold">
+                <i data-lucide="message-circle" class="w-5 h-5"></i>
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-bold mb-6">快速導覽</h3>
+            <div class="flex flex-col gap-4 text-sm text-stone-300">
+              <a href="#story" class="hover:text-gold">品牌故事</a>
+              <a href="#menu" class="hover:text-gold">線上點餐</a>
+              <a href="#gifts" class="hover:text-gold">冷凍禮盒</a>
+              <a href="#locations" class="hover:text-gold">門市資訊</a>
+              <a href="#faq" class="hover:text-gold">常見問題</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-bold mb-6">聯絡我們</h3>
+            <div class="text-sm text-stone-300 space-y-4">
+              <p>客服信箱：正式上線前提供</p>
+              <p>客服專線：正式上線前提供</p>
+              <p>服務地區：台灣</p>
+              <p class="text-xs">本網站為品牌官網展示原型。</p>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-bold mb-6">訂閱金邊好消息</h3>
+            <p class="text-sm text-stone-300 leading-loose mb-5">
+              掌握新品與活動消息（目前僅展示訂閱介面）。
+            </p>
+            <form id="newsletterForm" class="flex flex-col gap-3">
+              <input class="field !bg-white/10 !text-white !border-white/20 placeholder:text-stone-400"
+                type="email" id="newsletterEmail" placeholder="輸入 Email" aria-label="電子郵件" required>
+              <button type="submit" class="btn-primary !rounded-lg">訂閱電子報</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="border-t border-white/15 pt-7 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-stone-400">
+          <p>© <span id="year"></span> GOLDEN EDGE. All Rights Reserved.</p>
+          <div class="flex gap-5">
+            <button type="button" onclick="openPrivacy()" class="hover:text-gold">隱私權政策</button>
+            <a href="#home" class="hover:text-gold">回到頂部 ↑</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ==================== BACKDROP ==================== -->
+  <div id="backdrop" class="backdrop" aria-hidden="true"></div>
+
+  <!-- ==================== CART DRAWER ==================== -->
+  <aside id="cartDrawer" class="drawer" role="dialog" aria-modal="true"
+    aria-label="購物車" aria-hidden="true" tabindex="-1">
+    <div class="flex items-center justify-between px-6 py-6 border-b border-stone-200">
+      <div class="flex items-center gap-3">
+        <i data-lucide="shopping-bag" class="w-6 h-6 text-orange"></i>
+        <h2 class="serif text-2xl font-bold">我的購物車</h2>
+      </div>
+      <button id="cartCloseBtn" type="button" aria-label="關閉購物車">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <div id="cartItems" class="flex-1 overflow-y-auto px-6 py-5"></div>
+
+    <div class="border-t border-stone-200 p-6 bg-white">
+      <div class="flex justify-between text-sm text-mocha mb-3">
+        <span>商品小計</span>
+        <span id="cartSubtotal">NT$ 0</span>
+      </div>
+      <div class="flex justify-between text-xs text-mocha mb-4">
+        <span>運費</span>
+        <span>結帳時依服務方式確認</span>
+      </div>
+      <div class="flex justify-between items-center mb-6">
+        <strong>商品合計</strong>
+        <strong id="cartTotal" class="text-2xl text-orange">NT$ 0</strong>
+      </div>
+      <button id="checkoutBtn" type="button" class="btn-primary w-full" disabled>
+        前往結帳 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+      <p class="text-[11px] text-mocha text-center mt-3">展示模式 · 不會產生真實訂單或付款</p>
+    </div>
+  </aside>
+
+  <!-- ==================== CHECKOUT MODAL ==================== -->
+  <div id="checkoutModal" class="modal-layer" role="dialog" aria-modal="true"
+    aria-label="訂單確認" aria-hidden="true">
+    <div class="modal-box">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <p class="eyebrow mb-2">Checkout</p>
+          <h2 class="serif text-2xl font-bold">訂單確認</h2>
+        </div>
+        <button type="button" class="modal-close" aria-label="關閉結帳視窗">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <form id="checkoutForm" class="space-y-5">
+        <fieldset>
+          <legend class="font-bold text-sm mb-3">取餐 / 配送方式</legend>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="cursor-pointer border border-stone-300 rounded-lg p-3 text-center text-sm has-[:checked]:border-orange has-[:checked]:bg-orange/10">
+              <input type="radio" name="orderType" value="內用" class="accent-orange mb-2" checked>
+              <span class="block">內用</span>
+            </label>
+            <label class="cursor-pointer border border-stone-300 rounded-lg p-3 text-center text-sm has-[:checked]:border-orange has-[:checked]:bg-orange/10">
+              <input type="radio" name="orderType" value="外帶" class="accent-orange mb-2">
+              <span class="block">外帶</span>
+            </label>
+            <label class="cursor-pointer border border-stone-300 rounded-lg p-3 text-center text-sm has-[:checked]:border-orange has-[:checked]:bg-orange/10">
+              <input type="radio" name="orderType" value="宅配" class="accent-orange mb-2">
+              <span class="block">宅配</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div>
+          <label for="customerName" class="block text-sm font-bold mb-2">聯絡姓名 *</label>
+          <input id="customerName" name="customerName" type="text"
+            class="field" maxlength="40" autocomplete="name" required placeholder="請輸入姓名">
+        </div>
+
+        <div>
+          <label for="customerPhone" class="block text-sm font-bold mb-2">手機號碼 *</label>
+          <input id="customerPhone" name="customerPhone" type="tel"
+            class="field" inputmode="tel" pattern="09[0-9]{8}"
+            title="請輸入 09 開頭的 10 位台灣手機號碼" autocomplete="tel"
+            required placeholder="09xxxxxxxx">
+        </div>
+
+        <div id="addressGroup" class="hidden">
+          <label for="customerAddress" class="block text-sm font-bold mb-2">配送地址 *</label>
+          <input id="customerAddress" name="customerAddress" type="text"
+            class="field" maxlength="120" autocomplete="street-address"
+            placeholder="請輸入完整配送地址">
+        </div>
+
+        <div>
+          <label for="orderNote" class="block text-sm font-bold mb-2">備註</label>
+          <textarea id="orderNote" class="field" rows="2" maxlength="200"
+            placeholder="例如：不加辣、特殊需求"></textarea>
+        </div>
+
+        <div class="bg-paper rounded-xl p-5">
+          <div class="font-bold mb-3">訂單摘要</div>
+          <div id="checkoutSummary" class="space-y-2 text-sm text-mocha"></div>
+          <div class="border-t border-stone-300 mt-4 pt-4 flex justify-between">
+            <strong>商品合計（未含運費）</strong>
+            <strong id="checkoutTotal" class="text-orange"></strong>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary w-full">確認建立模擬訂單</button>
+        <p class="text-xs text-center text-mocha">
+          此為前端流程展示，不會傳送個資、進行付款或建立實際訂單。
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== SUCCESS MODAL ==================== -->
+  <div id="successModal" class="modal-layer" role="dialog" aria-modal="true"
+    aria-label="模擬訂單建立成功" aria-hidden="true">
+    <div class="modal-box text-center py-12">
+      <div class="w-20 h-20 bg-green-100 text-green-700 rounded-full mx-auto flex items-center justify-center mb-6">
+        <i data-lucide="check" class="w-10 h-10"></i>
+      </div>
+      <h2 class="serif text-3xl font-bold">模擬訂單已建立！</h2>
+      <p class="text-mocha mt-4 leading-loose">
+        感謝體驗金邊鍋貼的線上點餐流程。<br>
+        此訂單僅於本次網頁操作中成立，並未送出。
+      </p>
+      <p class="text-sm mt-5">展示訂單編號：<strong id="orderNumber"></strong></p>
+      <button id="successCloseBtn" class="btn-primary mt-8" type="button">
+        繼續逛逛
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== PRIVACY MODAL ==================== -->
+  <div id="privacyModal" class="modal-layer" role="dialog" aria-modal="true"
+    aria-label="隱私權說明" aria-hidden="true">
+    <div class="modal-box">
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="serif text-2xl font-bold">隱私權說明（展示版本）</h2>
+        <button class="modal-close" type="button" aria-label="關閉">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+      <div class="text-sm text-mocha leading-loose space-y-4">
+        <p>本網站為前端示範原型，不提供正式訂購、會員或電子報服務。</p>
+        <p>購物車商品資料儲存在您瀏覽器的 localStorage 中，以保留購物車狀態。可透過清除瀏覽器網站資料移除。</p>
+        <p>結帳表單輸入的聯絡資訊只用於本頁模擬流程，不會傳送至金邊鍋貼伺服器。</p>
+        <p>本網站使用 Tailwind CDN、Lucide、Google Fonts、Unsplash 及 Google Maps 等外部資源，瀏覽器可能向服務提供方發出載入請求。</p>
+        <p>正式上線前，應依實際資料蒐集、金流、物流及第三方服務內容制定完整隱私權政策。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST ==================== -->
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+    "use strict";
+
+    // --------------------------------------------------
+    // 1. 示範商品資料
+    // --------------------------------------------------
+    const products = [
+      {
+        id: "p1", name: "經典鮮肉鍋貼", category: "potsticker",
+        price: 75, unit: "10顆", tag: "人氣 NO.1", spicy: false,
+        desc: "鮮甜肉餡搭配金黃脆皮，經典不敗。",
+        image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p2", name: "韭菜鮮肉鍋貼", category: "potsticker",
+        price: 80, unit: "10顆", tag: "香氣十足", spicy: false,
+        desc: "清香韭菜與鮮肉的完美融合。",
+        image: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p3", name: "香辣鮮肉鍋貼", category: "potsticker",
+        price: 85, unit: "10顆", tag: "微辣", spicy: true,
+        desc: "微辣香氣層層堆疊，越吃越過癮。",
+        image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p4", name: "鮮蝦高麗菜水餃", category: "dumpling",
+        price: 110, unit: "10顆", tag: "鮮甜", spicy: false,
+        desc: "鮮蝦搭配清甜高麗菜，口感飽滿。",
+        image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p5", name: "手工韭菜水餃", category: "dumpling",
+        price: 80, unit: "10顆", tag: "經典", spicy: false,
+        desc: "皮薄餡實，簡單卻讓人回味。",
+        image: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p6", name: "玉米鮮肉水餃", category: "dumpling",
+        price: 85, unit: "10顆", tag: "清甜", spicy: false,
+        desc: "玉米的甜與鮮肉的香交織。",
+        image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p7", name: "經典酸辣湯", category: "soup",
+        price: 45, unit: "1碗", tag: "人氣", spicy: true,
+        desc: "酸香開胃，搭配鍋貼的最佳選擇。",
+        image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p8", name: "鮮菇蔬菜湯", category: "soup",
+        price: 45, unit: "1碗", tag: "清爽", spicy: false,
+        desc: "蔬菜與菇類的自然鮮甜。",
+        image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p9", name: "香濃無糖豆漿", category: "soup",
+        price: 30, unit: "1杯", tag: "無糖", spicy: false,
+        desc: "濃郁豆香，清爽順口。",
+        image: "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p10", name: "黃金泡菜", category: "side",
+        price: 45, unit: "1份", tag: "推薦", spicy: true,
+        desc: "酸甜微辣，爽脆開胃。",
+        image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p11", name: "涼拌小黃瓜", category: "side",
+        price: 40, unit: "1份", tag: "清爽", spicy: false,
+        desc: "爽口清脆，解膩好選擇。",
+        image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "p12", name: "手工滷豆干", category: "side",
+        price: 40, unit: "1份", tag: "家常", spicy: false,
+        desc: "滷香入味，越嚼越香。",
+        image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "gift1", name: "金邊經典家庭禮盒", category: "gift",
+        price: 399, unit: "50入", tag: "家庭", spicy: false,
+        desc: "冷凍經典原味鍋貼。",
+        image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: "gift2", name: "金邊招財雙拼禮盒", category: "gift",
+        price: 499, unit: "60入", tag: "送禮", spicy: false,
+        desc: "冷凍原味與韭菜雙拼。",
+        image: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=800&q=80"
+      }
+    ];
+
+    // 所有店家與營業資訊皆為展示資料。
+    const stores = [
+      {
+        name: "台北旗艦店（示範）",
+        address: "台北市大安區（完整地址尚待設定）",
+        phone: "尚未提供",
+        hours: "營業時間尚待公告",
+        mapQuery: "Taipei Da'an District"
+      },
+      {
+        name: "台北信義店（示範）",
+        address: "台北市信義區（完整地址尚待設定）",
+        phone: "尚未提供",
+        hours: "營業時間尚待公告",
+        mapQuery: "Taipei Xinyi District"
+      }
+    ];
+
+    const CART_KEY = "golden-edge-demo-cart-v1";
+    const $ = selector => document.querySelector(selector);
+    const $$ = selector => document.querySelectorAll(selector);
+    const money = n => "NT$ " + Number(n).toLocaleString("zh-TW");
+
+    let cart = {};
+    let activeCategory = "all";
+    let toastTimer = null;
+    let lastFocus = null;
+
+    // --------------------------------------------------
+    // 2. 安全讀取購物車
+    // --------------------------------------------------
+    function loadCart() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
+        if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+
+        const valid = {};
+        for (const [id, quantity] of Object.entries(raw)) {
+          if (products.some(p => p.id === id) &&
+              Number.isInteger(quantity) && quantity > 0) {
+            valid[id] = Math.min(quantity, 99);
+          }
+        }
+        return valid;
+      } catch {
+        return {};
+      }
+    }
+
+    function saveCart() {
+      try {
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      } catch {
+        // 瀏覽器禁止儲存時，仍可使用當次購物車。
+      }
+    }
+
+    function getProduct(id) {
+      return products.find(p => p.id === id);
+    }
+
+    function getCartEntries() {
+      return Object.entries(cart)
+        .map(([id, qty]) => ({ product: getProduct(id), qty }))
+        .filter(item => item.product && item.qty > 0);
+    }
+
+    function getSubtotal() {
+      return getCartEntries().reduce(
+        (total, item) => total + item.product.price * item.qty, 0
+      );
+    }
+
+    // --------------------------------------------------
+    // 3. 商品分類與卡片
+    // --------------------------------------------------
+    function renderMenu() {
+      const filtered = products.filter(p =>
+        p.category !== "gift" &&
+        (activeCategory === "all" || p.category === activeCategory)
+      );
+
+      $("#menuGrid").innerHTML = filtered.map(p => `
+        <article class="menu-card">
+          <div class="relative overflow-hidden">
+            <img src="${p.image}" alt="${p.name}示意圖片"
+              class="menu-image" loading="lazy">
+            <span class="absolute top-4 left-4 bg-white/95 rounded-full
+              px-3 py-1.5 text-[11px] text-coffee font-bold">
+              ${p.tag}
+            </span>
+          </div>
+          <div class="p-5">
+            <div class="flex justify-between items-start gap-2">
+              <h3 class="serif text-lg font-bold">${p.name}</h3>
+              ${p.spicy
+                ? '<span class="text-xs text-red-600 shrink-0">🌶 微辣</span>'
+                : ''}
+            </div>
+            <p class="text-mocha text-xs leading-relaxed mt-3 min-h-[36px]">
+              ${p.desc}
+            </p>
+            <div class="flex items-center justify-between gap-2 mt-5">
+              <div>
+                <strong class="text-orange text-xl">${money(p.price)}</strong>
+                <span class="text-xs text-mocha"> / ${p.unit}</span>
+              </div>
+              <button type="button"
+                class="bg-coffee hover:bg-orange text-white rounded-full
+                  w-10 h-10 flex items-center justify-center transition"
+                aria-label="加入${p.name}到購物車"
+                data-add="${p.id}">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+
+      refreshIcons();
+    }
+
+    function selectCategory(category) {
+      activeCategory = category;
+
+      $$(".tab-btn").forEach(button => {
+        const active = button.dataset.category === category;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", String(active));
+      });
+
+      renderMenu();
+    }
+
+    // --------------------------------------------------
+    // 4. Toast 通知
+    // --------------------------------------------------
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    // --------------------------------------------------
+    // 5. 購物車操作
+    // --------------------------------------------------
+    function addToCart(id) {
+      const product = getProduct(id);
+      if (!product) return;
+
+      const old = cart[id] || 0;
+      if (old >= 99) {
+        showToast("單項商品最多可加入 99 份");
+        return;
+      }
+
+      cart[id] = old + 1;
+      saveCart();
+      updateCartUI();
+      showToast("✓ 已加入購物車：" + product.name);
+    }
+
+    function changeQuantity(id, delta) {
+      if (!getProduct(id)) return;
+
+      const next = (cart[id] || 0) + delta;
+      if (next <= 0) {
+        delete cart[id];
+      } else {
+        cart[id] = Math.min(next, 99);
+      }
+
+      saveCart();
+      updateCartUI();
+    }
+
+    function removeItem(id) {
+      delete cart[id];
+      saveCart();
+      updateCartUI();
+      showToast("已移除商品");
+    }
+
+    function updateCartUI() {
+      const entries = getCartEntries();
+      const count = entries.reduce((sum, item) => sum + item.qty, 0);
+      const subtotal = getSubtotal();
+
+      $("#cartBadge").textContent = count > 99 ? "99+" : String(count);
+      $("#cartSubtotal").textContent = money(subtotal);
+      $("#cartTotal").textContent = money(subtotal);
+      $("#checkoutBtn").disabled = entries.length === 0;
+
+      if (!entries.length) {
+        $("#cartItems").innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center py-16">
+            <div class="w-20 h-20 rounded-full bg-paper
+              flex items-center justify-center mb-6">
+              <i data-lucide="shopping-bag" class="w-9 h-9 text-mocha"></i>
+            </div>
+            <h3 class="serif text-xl font-bold">購物車還是空的</h3>
+            <p class="text-sm text-mocha mt-3">快來挑選喜歡的金邊美味吧！</p>
+            <button type="button" class="btn-primary mt-7" id="emptyCartBrowse">
+              探索餐點
+            </button>
+          </div>
+        `;
+        refreshIcons();
+        return;
+      }
+
+      $("#cartItems").innerHTML = entries.map(({product: p, qty}) => `
+        <div class="flex gap-4 py-5 border-b border-stone-200">
+          <img src="${p.image}" alt="${p.name}"
+            class="w-20 h-20 rounded-lg object-cover shrink-0">
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between gap-2">
+              <h3 class="font-bold text-sm">${p.name}</h3>
+              <button type="button" data-remove="${p.id}"
+                aria-label="移除${p.name}" class="text-stone-400 hover:text-red-500">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <p class="text-orange font-bold mt-2">${money(p.price)}</p>
+            <div class="flex items-center justify-between mt-3">
+              <div class="flex items-center border border-stone-300 rounded-lg">
+                <button type="button" data-qty="${p.id}" data-delta="-1"
+                  class="px-3 py-1" aria-label="減少${p.name}數量">−</button>
+                <span class="text-sm min-w-6 text-center">${qty}</span>
+                <button type="button" data-qty="${p.id}" data-delta="1"
+                  class="px-3 py-1" aria-label="增加${p.name}數量">+</button>
+              </div>
+              <strong class="text-sm">${money(p.price * qty)}</strong>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      refreshIcons();
+    }
+
+    // --------------------------------------------------
+    // 6. Drawer 與 Modal 控制
+    // --------------------------------------------------
+    function refreshIcons() {
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function syncBodyLock() {
+      const hasOpen =
+        $("#cartDrawer").classList.contains("show") ||
+        $$(".modal-layer.show").length > 0;
+
+      document.body.classList.toggle("locked", hasOpen);
+    }
+
+    function openCart() {
+      lastFocus = document.activeElement;
+      $("#backdrop").classList.add("show");
+      $("#cartDrawer").classList.add("show");
+      $("#cartDrawer").setAttribute("aria-hidden", "false");
+      syncBodyLock();
+      $("#cartCloseBtn").focus();
+    }
+
+    function closeCart(restoreFocus = true) {
+      $("#backdrop").classList.remove("show");
+      $("#cartDrawer").classList.remove("show");
+      $("#cartDrawer").setAttribute("aria-hidden", "true");
+      syncBodyLock();
+
+      if (restoreFocus && lastFocus && lastFocus.isConnected) {
+        lastFocus.focus();
+      }
+    }
+
+    function openModal(id) {
+      lastFocus = document.activeElement;
+      $$(".modal-layer").forEach(m => {
+        m.classList.remove("show");
+        m.setAttribute("aria-hidden", "true");
+      });
+
+      const modal = document.getElementById(id);
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+      syncBodyLock();
+
+      const focusTarget = modal.querySelector("button, input");
+      if (focusTarget) focusTarget.focus();
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      syncBodyLock();
+
+      if (lastFocus && lastFocus.isConnected) lastFocus.focus();
+    }
+
+    function openPrivacy() {
+      openModal("privacyModal");
+    }
+
+    // --------------------------------------------------
+    // 7. 結帳流程
+    // --------------------------------------------------
+    function renderCheckoutSummary() {
+      const entries = getCartEntries();
+
+      $("#checkoutSummary").innerHTML = entries.map(({product, qty}) => `
+        <div class="flex justify-between gap-3">
+          <span>${product.name} × ${qty}</span>
+          <span>${money(product.price * qty)}</span>
+        </div>
+      `).join("");
+
+      $("#checkoutTotal").textContent = money(getSubtotal());
+    }
+
+    function startCheckout() {
+      if (!getCartEntries().length) return;
+
+      renderCheckoutSummary();
+      $("#checkoutForm").reset();
+      toggleDeliveryAddress();
+      closeCart(false);
+      openModal("checkoutModal");
+    }
+
+    function toggleDeliveryAddress() {
+      const type = $('input[name="orderType"]:checked').value;
+      const isDelivery = type === "宅配";
+      const group = $("#addressGroup");
+      const input = $("#customerAddress");
+
+      group.classList.toggle("hidden", !isDelivery);
+      input.required = isDelivery;
+
+      if (!isDelivery) input.value = "";
+    }
+
+    function submitOrder(event) {
+      event.preventDefault();
+      if (!getCartEntries().length) {
+        showToast("購物車目前沒有商品");
+        closeModal("checkoutModal");
+        return;
+      }
+
+      const form = $("#checkoutForm");
+      if (!form.reportValidity()) return;
+
+      // 僅產生前端展示訂單編號，不會送出資料。
+      const now = new Date();
+      const datePart = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, "0"),
+        String(now.getDate()).padStart(2, "0")
+      ].join("");
+      const randomPart = Math.floor(Math.random() * 900000 + 100000);
+
+      $("#orderNumber").textContent = `DEMO-${datePart}-${randomPart}`;
+
+      cart = {};
+      saveCart();
+      updateCartUI();
+      form.reset();
+      closeModal("checkoutModal");
+      openModal("successModal");
+    }
+
+    // --------------------------------------------------
+    // 8. 門市切換
+    // --------------------------------------------------
+    function selectStore(index) {
+      const store = stores[index];
+      if (!store) return;
+
+      $("#storeName").textContent = store.name;
+      $("#storeAddress").textContent = store.address;
+      $("#storePhone").textContent = store.phone;
+      $("#storeHours").textContent = store.hours;
+
+      $("#storeMap").src =
+        "https://maps.google.com/maps?q=" +
+        encodeURIComponent(store.mapQuery) +
+        "&t=&z=13&ie=UTF8&iwloc=&output=embed";
+
+      $$(".location-btn").forEach((btn, i) => {
+        btn.classList.toggle("active", i === index);
+        btn.setAttribute("aria-pressed", String(i === index));
+      });
+    }
+
+    // --------------------------------------------------
+    // 9. FAQ Accordion
+    // --------------------------------------------------
+    function setupFAQ() {
+      $$(".faq-question").forEach(button => {
+        button.addEventListener("click", () => {
+          const item = button.closest(".faq-item");
+          const shouldOpen = !item.classList.contains("open");
+
+          $$(".faq-item").forEach(el => {
+            el.classList.remove("open");
+            el.querySelector(".faq-question").setAttribute("aria-expanded", "false");
+          });
+
+          if (shouldOpen) {
+            item.classList.add("open");
+            button.setAttribute("aria-expanded", "true");
+          }
+        });
+      });
+    }
+
+    // --------------------------------------------------
+    // 10. 焦點與鍵盤操作
+    // --------------------------------------------------
+    function getActiveDialog() {
+      const modals = [...$$(".modal-layer.show")];
+      if (modals.length) return modals[modals.length - 1];
+      return $("#cartDrawer").classList.contains("show")
+        ? $("#cartDrawer")
+        : null;
+    }
+
+    function handleDialogKeyboard(event) {
+      const dialog = getActiveDialog();
+      if (!dialog) return;
+
+      if (event.key === "Escape") {
+        if (dialog.id === "cartDrawer") {
+          closeCart();
+        } else if (dialog.id !== "successModal") {
+          closeModal(dialog.id);
+        }
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const focusables = [...dialog.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), a[href]'
+      )].filter(el => el.getClientRects().length > 0);
+
+      if (!focusables.length) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    // --------------------------------------------------
+    // 11. 初始化事件監聽
+    // --------------------------------------------------
+    function init() {
+      cart = loadCart();
+      renderMenu();
+      updateCartUI();
+      selectStore(0);
+      setupFAQ();
+
+      $("#year").textContent = new Date().getFullYear();
+
+      $("#menuTabs").addEventListener("click", event => {
+        const button = event.target.closest("[data-category]");
+        if (button) selectCategory(button.dataset.category);
+      });
+
+      $("#menuGrid").addEventListener("click", event => {
+        const button = event.target.closest("[data-add]");
+        if (button) addToCart(button.dataset.add);
+      });
+
+      $("#cartOpenBtn").addEventListener("click", openCart);
+      $("#cartCloseBtn").addEventListener("click", () => closeCart());
+      $("#backdrop").addEventListener("click", () => closeCart());
+      $("#checkoutBtn").addEventListener("click", startCheckout);
+
+      $("#cartItems").addEventListener("click", event => {
+        const qtyButton = event.target.closest("[data-qty]");
+        const removeButton = event.target.closest("[data-remove]");
+        const browseButton = event.target.closest("#emptyCartBrowse");
+
+        if (qtyButton) {
+          changeQuantity(
+            qtyButton.dataset.qty,
+            Number(qtyButton.dataset.delta)
+          );
+        }
+
+        if (removeButton) removeItem(removeButton.dataset.remove);
+
+        if (browseButton) {
+          closeCart();
+          $("#menu").scrollIntoView({behavior: "smooth"});
+        }
+      });
+
+      $("#locationButtons").addEventListener("click", event => {
+        const button = event.target.closest("[data-index]");
+        if (button) selectStore(Number(button.dataset.index));
+      });
+
+      $$('input[name="orderType"]').forEach(input =>
+        input.addEventListener("change", toggleDeliveryAddress)
+      );
+
+      $("#checkoutForm").addEventListener("submit", submitOrder);
+
+      $$(".modal-close").forEach(button => {
+        button.addEventListener("click", () => {
+          const modal = button.closest(".modal-layer");
+          closeModal(modal.id);
+        });
+      });
+
+      $$(".modal-layer").forEach(modal => {
+        modal.addEventListener("click", event => {
+          if (event.target === modal && modal.id !== "successModal") {
+            closeModal(modal.id);
+          }
+        });
+      });
+
+      $("#successCloseBtn").addEventListener("click", () => {
+        closeModal("successModal");
+        $("#home").scrollIntoView({behavior: "smooth"});
+      });
+
+      document.addEventListener("keydown", handleDialogKeyboard);
+
+      // 手機版選單
+      const menuToggle = $("#menuToggle");
+      const mobileNav = $("#mobileNav");
+
+      menuToggle.addEventListener("click", () => {
+        const open = mobileNav.classList.toggle("show");
+        menuToggle.setAttribute("aria-expanded", String(open));
+      });
+
+      $$("#mobileNav a").forEach(link => {
+        link.addEventListener("click", () => {
+          mobileNav.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        });
+      });
+
+      // 電子報展示表單，不傳送 Email。
+      $("#newsletterForm").addEventListener("submit", event => {
+        event.preventDefault();
+        if (!event.currentTarget.reportValidity()) return;
+        showToast("訂閱功能展示成功！目前尚未連接電子報服務");
+        event.currentTarget.reset();
+      });
+
+      refreshIcons();
+    }
+
+    // 確保所有 HTML 與外部圖示庫載入後再初始化。
+    window.addEventListener("load", init);
+  </script>
+</body>
+</html>
