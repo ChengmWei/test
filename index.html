@@ -214,6 +214,29 @@
       box-shadow: 0 0 0 3px rgba(201,121,54,.12);
     }
 
+    .booking-fab {
+      position: fixed;
+      right: calc(20px + env(safe-area-inset-right));
+      bottom: calc(20px + env(safe-area-inset-bottom));
+      z-index: 60;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 52px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      background: var(--coffee);
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 6px 24px rgba(52,37,30,.25);
+      transition: background .2s;
+    }
+
+    .booking-fab:hover { background: #725747; }
+    .booking-fab:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
+
     .backdrop {
       position: fixed;
       inset: 0;
@@ -377,6 +400,12 @@
 </head>
 
 <body>
+  <a class="booking-fab" href="https://calendar.app.google/ayzKAaR3bNNvqxhB7"
+     target="_blank" rel="noopener noreferrer"
+     aria-label="立即預約（在新分頁開啟 Google 預約頁面）">
+    <i data-lucide="calendar-check" class="w-5 h-5" aria-hidden="true"></i>
+    <span>立即預約</span>
+  </a>
   <!-- ==================== HEADER ==================== -->
   <header id="header" class="sticky top-0 z-50 bg-cream/95 backdrop-blur-md border-b border-stone-200">
     <div class="section-wrap h-[76px] flex items-center justify-between gap-4">
