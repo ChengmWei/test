@@ -8,7 +8,7 @@
 參數：
     --center X Y  鍋貼在照片中的中心位置（0~1，預設 0.5 0.5 = 正中央）
     --zoom Z      放大倍率，>1 會裁得更緊（預設 1.0）
-    --glow G      發光強度 0~1.5（預設 0.8；照片本身已經發光可設 0.3）
+    --glow G      發光強度 0~1.5（預設 1.0）
 
 輸出到 icons/：
     icon-192.png, icon-512.png                 一般圖示
@@ -50,52 +50,64 @@ def radial(size, inner, outer, power=1.6):
     return Image.composite(Image.new("RGB", (size, size), outer), Image.new("RGB", (size, size), inner), grad)
 
 
-def add_glow(img, strength):
-    """金色發光：亮部泛光（bloom）+ 中央暖光 + 邊緣暗角。"""
-    if strength <= 0:
-        return img
-    size = img.size[0]
-    base = ImageEnhance.Contrast(img).enhance(1.06)
-    base = ImageEnhance.Color(base).enhance(1.12)
+def soft_disc(size, diameter, blur, value=255):
+    m = Image.new("L", (size, size), 0)
+    o = (size - diameter) / 2
+    ImageDraw.Draw(m).ellipse((o, o, o + diameter, o + diameter), fill=value)
+    return m.filter(ImageFilter.GaussianBlur(blur)) if blur else m
 
-    # 1) 亮部泛光：取亮部 → 大幅模糊 → 以 screen 疊回
-    lum = base.convert("L").point(lambda v: max(0, v - 150) * 2.6)
-    bloom_src = Image.composite(Image.new("RGB", (size, size), GOLD), Image.new("RGB", (size, size), (0, 0, 0)), lum)
-    bloom = bloom_src.filter(ImageFilter.GaussianBlur(size * 0.045))
-    bloom = ImageEnhance.Brightness(bloom).enhance(0.9 * strength)
-    out = ImageChops.screen(base, bloom)
 
-    # 2) 中央暖光光暈
-    halo = radial(size, (int(GOLD[0] * 0.55), int(GOLD[1] * 0.42), int(GOLD[2] * 0.2)), (0, 0, 0), power=1.2)
-    halo = ImageEnhance.Brightness(halo).enhance(0.75 * strength)
-    out = ImageChops.screen(out, halo)
+def rays(size, count=16, strength=1.0):
+    """從中心放射的柔和光芒。"""
+    import math
+    m = Image.new("L", (size, size), 0)
+    d = ImageDraw.Draw(m)
+    c = size / 2
+    for i in range(count):
+        a = 2 * math.pi * i / count
+        w = math.pi / count * 0.45
+        r = size * 0.75
+        d.polygon([(c, c),
+                   (c + r * math.cos(a - w), c + r * math.sin(a - w)),
+                   (c + r * math.cos(a + w), c + r * math.sin(a + w))], fill=int(70 * strength))
+    m = m.filter(ImageFilter.GaussianBlur(size * 0.02))
+    fade = ImageChops.invert(radial(size, (255, 255, 255), (0, 0, 0), power=0.9).convert("L"))
+    return ImageChops.multiply(m, ImageChops.invert(fade))
 
-    # 3) 邊緣暗角，讓發光更聚焦
-    vignette = radial(size, (255, 255, 255), (int(255 * (1 - 0.55 * min(strength, 1))),) * 3, power=2.2)
-    out = ImageChops.multiply(out, vignette)
 
-    # 4) 外圈細金邊光
+def compose(photo, size, frac, glow):
+    """深咖啡底 + 金色放射光 + 光暈 + 圓形鍋貼照片 + 金邊。"""
+    bg = radial(size, (92, 56, 30), COFFEE, power=1.1)
+    gold = Image.new("RGB", (size, size), GOLD)
+
+    # 放射光芒
+    bg = Image.composite(gold, bg, rays(size, 18, glow))
+    # 主體後方的大光暈（多層，越外越淡）
+    diam = int(size * frac)
+    for scale, blur, val in ((1.08, 0.07, 255), (1.28, 0.13, 150), (1.55, 0.2, 80)):
+        halo = soft_disc(size, int(diam * scale), size * blur, int(val * min(glow, 1.2) / 1.2))
+        bg = Image.composite(gold, bg, halo)
+
+    # 圓形鍋貼照片（亮部微泛光）
+    ph = photo.resize((diam, diam), Image.LANCZOS)
+    ph = ImageEnhance.Color(ImageEnhance.Contrast(ph).enhance(1.05)).enhance(1.12)
+    lum = ph.convert("L").point(lambda v: max(0, v - 170) * 3)
+    bloom = Image.composite(Image.new("RGB", ph.size, GOLD), Image.new("RGB", ph.size, (0, 0, 0)), lum)
+    ph = ImageChops.screen(ph, ImageEnhance.Brightness(bloom.filter(ImageFilter.GaussianBlur(diam * 0.03))).enhance(0.5 * glow))
+    # 照片邊緣往內帶一點金色內光
+    inner = ImageChops.invert(soft_disc(diam, int(diam * 0.86), diam * 0.06))
+    ph = ImageChops.screen(ph, Image.composite(Image.new("RGB", ph.size, (150, 100, 40)), Image.new("RGB", ph.size, (0, 0, 0)), inner))
+    off = (size - diam) // 2
+    bg.paste(ph, (off, off), soft_disc(diam, diam, max(1, diam * 0.004)))
+
+    # 亮金色外框
     ring = Image.new("L", (size, size), 0)
-    d = ImageDraw.Draw(ring)
-    pad = size * 0.035
-    d.ellipse((pad, pad, size - pad, size - pad), outline=255, width=max(1, int(size * 0.012)))
-    ring = ring.filter(ImageFilter.GaussianBlur(size * 0.012))
-    ring_rgb = Image.composite(Image.new("RGB", (size, size), GOLD), Image.new("RGB", (size, size), (0, 0, 0)), ring)
-    out = ImageChops.screen(out, ImageEnhance.Brightness(ring_rgb).enhance(0.55 * strength))
-    return out
-
-
-def maskable(img, size):
-    """Android 會把圖示裁成圓形／圓角等形狀；主體縮到 80% 安全區，外圍用模糊延伸補滿。"""
-    bg = img.resize((size, size), Image.LANCZOS).filter(ImageFilter.GaussianBlur(size * 0.06))
-    bg = ImageEnhance.Brightness(bg).enhance(0.55)
-    inner = int(size * 0.80)
-    fg = img.resize((inner, inner), Image.LANCZOS)
-    mask = Image.new("L", (inner, inner), 0)
-    ImageDraw.Draw(mask).ellipse((0, 0, inner, inner), fill=255)
-    mask = mask.filter(ImageFilter.GaussianBlur(inner * 0.03))
-    off = (size - inner) // 2
-    bg.paste(fg, (off, off), mask)
+    w = max(2, int(size * 0.018))
+    o = off - w // 2
+    ImageDraw.Draw(ring).ellipse((o, o, o + diam + w, o + diam + w), outline=255, width=w)
+    bg = Image.composite(Image.new("RGB", (size, size), (255, 214, 140)), bg, ring.filter(ImageFilter.GaussianBlur(w * 0.35)))
+    glow_ring = ring.filter(ImageFilter.GaussianBlur(size * 0.025))
+    bg = ImageChops.screen(bg, Image.composite(gold, Image.new("RGB", (size, size), (0, 0, 0)), glow_ring))
     return bg
 
 
@@ -104,7 +116,7 @@ def main():
     ap.add_argument("src")
     ap.add_argument("--center", nargs=2, type=float, default=(0.5, 0.5), metavar=("X", "Y"))
     ap.add_argument("--zoom", type=float, default=1.0)
-    ap.add_argument("--glow", type=float, default=0.8)
+    ap.add_argument("--glow", type=float, default=1.0)
     ap.add_argument("--out", default=OUT_DIR, help="輸出資料夾（預設 icons/）")
     a = ap.parse_args()
     out_dir = a.out
@@ -118,18 +130,21 @@ def main():
     else:
         src = src.convert("RGB")
 
-    master = square_crop(src, a.center[0], a.center[1], a.zoom).resize((1024, 1024), Image.LANCZOS)
-    master = add_glow(master, a.glow)
+    photo = square_crop(src, a.center[0], a.center[1], a.zoom).resize((1024, 1024), Image.LANCZOS)
+    master = compose(photo, 1024, 0.74, a.glow)       # 一般圖示
+    mask_master = compose(photo, 1024, 0.60, a.glow)  # Android 可裁切圖示：主體在 80% 安全區內
 
     os.makedirs(out_dir, exist_ok=True)
     save = lambda im, name: im.save(os.path.join(out_dir, name), optimize=True)
-    for s in (512, 192):
-        save(master.resize((s, s), Image.LANCZOS), f"icon-{s}.png")
-        save(maskable(master, s), f"icon-maskable-{s}.png")
+    for sz in (512, 192):
+        save(master.resize((sz, sz), Image.LANCZOS), f"icon-{sz}.png")
+        save(mask_master.resize((sz, sz), Image.LANCZOS), f"icon-maskable-{sz}.png")
     save(master.resize((180, 180), Image.LANCZOS), "apple-touch-icon.png")
-    save(master.resize((32, 32), Image.LANCZOS), "favicon-32.png")
-    save(master.resize((16, 16), Image.LANCZOS), "favicon-16.png")
-    master.resize((48, 48), Image.LANCZOS).save(os.path.join(out_dir, "favicon.ico"), sizes=[(16, 16), (32, 32), (48, 48)])
+    # 小尺寸 favicon 主體放大一點才看得清楚
+    fav = compose(photo, 256, 0.86, a.glow)
+    save(fav.resize((32, 32), Image.LANCZOS), "favicon-32.png")
+    save(fav.resize((16, 16), Image.LANCZOS), "favicon-16.png")
+    fav.resize((48, 48), Image.LANCZOS).save(os.path.join(out_dir, "favicon.ico"), sizes=[(16, 16), (32, 32), (48, 48)])
     print("icons written to", os.path.normpath(out_dir))
 
 
